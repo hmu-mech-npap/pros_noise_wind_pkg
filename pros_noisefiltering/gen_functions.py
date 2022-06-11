@@ -33,6 +33,7 @@ def spect (x:np.ndarray, FS:int, window='flattop', nperseg=1_024, scaling='spect
 
 def plot_spect_comb2(graph_objlist ,
                     title:str, 
+                    alpha = 1,
                     xlim = None, 
                     ylim = 'auto',
                     Kolmogorov_offset = None,
@@ -54,9 +55,11 @@ def plot_spect_comb2(graph_objlist ,
     for gdc_obj in graph_objlist:
         assert isinstance(gdc_obj, Graph_data_container)
         marker = markers[no_grph% len(markers)]
-        ax.scatter(gdc_obj.x, np.sqrt(gdc_obj.y), label=f'{gdc_obj.label}', 
+        ax.scatter(gdc_obj.x, np.sqrt(gdc_obj.y), 
+                   label=f'{gdc_obj.label}', 
                    s=kwargs.get('markersize',2),
-                   marker=marker
+                   marker=marker,
+                   alpha=alpha
                    )
         xylims.append(gdc_obj.extrema)
         no_grph +=1
@@ -67,6 +70,7 @@ def plot_spect_comb2(graph_objlist ,
     except:
         pass
     
+    # ===========================  Plot Kolmoogov Line
     if Kolmogorov_offset is not None:
         KOLMOGORV_CONSTANT = - 5/3
         xs = np.array(graph_objlist[0].xs_lim)
@@ -78,17 +82,25 @@ def plot_spect_comb2(graph_objlist ,
         
     elif isinstance(ylim, list):
         ax.set_ylim( ylim)
-    # final formating
+    # =================== final formating
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.grid(True, which='both')
     ax.set_xlabel('Frequency [Hz]')
-    ax.set_ylabel('Amplitute')
+    ax.set_ylabel('Spectral density [V**2/Hz]')
     # plt.legend(bbox_to_anchor=(1.04,0.5))
     ax.legend()
     ax.set_title(title)
+    # ============================ save to disk
     if kwargs.get('to_disk', None) is True:
+        #TODO remove this in favor of the fname (see below) 
         target_path = pathlib.Path('_temp_fig/{}.png'.format(title.translate({ord(c): None for c in ': /=\n'} )))
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(target_path,facecolor='white', transparent=False)
+
+    fname = kwargs.get('fname', None)
+    if fname is not None:
+        target_path = pathlib.Path(f'_temp_fig/{fname}.png')
         target_path.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(target_path,facecolor='white', transparent=False)
     
@@ -119,27 +131,7 @@ class Time_domain_data_cont():
      
 
 #Define function to plot the raw and filtered signals combined 
-# This function could be replaced with the new one
-#
-# def plot_signals(x_1:np.ndarray,x_2:np.ndarray,
-#                 y_1:np.ndarray,y_2:np.ndarray,
-#                 Title:str):
-#     """Plot the filtered signal in combined plots for comparison with the raw signal
-#     Args:
-#         x_1 (np.ndarray): time interval of raw signal.
-#         x_2 (np.ndarray): time interval of filtered signal.
-#         y_1 (np.ndarray): ndArray for each dataframe column (from raw signal).
-#         y_2 (list): same as y_1 for filtered signal. 
-#         Title (str): a list with titles discribing the system condition (connected inverter or not etc.).
-#     """
-#     plt.title(Title)
-#     plt.scatter(x_1, y_1, label= 'Raw signal', alpha=0.2)
-#     plt.plot(x_2, y_2, label='Filtered signal', color= 'r')
-#     plt.grid(True)
-#     plt.xlabel('Time [s]')
-#     plt.ylabel('Amplitute')
-#     plt.legend(loc='lower right')
-#     plt.show()
+
 def plot_signals(time_domain_sig,
                 axis_titles:str,
                 Title:str,
@@ -168,73 +160,6 @@ def plot_signals(time_domain_sig,
         ax.set_xlabel(ax_title.x_title)
         ax.grid(True, which='both')
         ax.legend(bbox_to_anchor=(1.04,0.5))
-
-#Define function for ploting the signals in seperate graphs
-# 
-# This function is not needed. The original use was for my better understanding
-# in early process of .h5 dataframe.
-#  
-# def plot_sep_sig(x_1:np.ndarray, y_1:np.ndarray, x_2:np.ndarray, y_2:np.ndarray, TITLE:str, TITLE_2:str, color:str):
-#     """
-#     Plots of the filtered and raw signal in separate figures 
-#     for better understanding of the system response to the filter 
-#     Args:
-#         x_1 (np.ndarray): time interval of measurment.
-#         y_1 (np.ndarray): raw signal from sensor. 
-#         x_2 (np.ndarray): time interval of filtered samples.
-#         y_2 (np.ndarray):  filtered signal after process.
-#         TITLE (str): Title for figure with raw data.
-#         TITLE_2 (str): Title for figure with filtered data. 
-#         color (str): the color for each plot of filtered signal(connected(off=red, on=yellow, on_and_wind_speed=black), same for disconnected). 
-#     """
-#     plt.title(TITLE)
-#     plt.grid(True)
-#     plt.xlabel('Time [s]')
-#     plt.ylabel('Amplitute')
-#     plt.plot(x_1, y_1)
-#     plt.show()
-# 
-#     plt.title(TITLE_2)
-#     plt.grid(True)
-#     plt.xlabel('Time [s]')
-#     plt.ylabel('Amplitute')
-#     plt.plot(x_2, y_2, color, linewidth= 1)
-#     plt.show()
-
-#Define function for FFT of two signals to be able of plotting 
-#the corrupted and uncorrupted signals in frequency domain
-# 
-# This function will be replaced to use as input a class object. This is because 
-# will be much easier to use it in the application. (I think....?!?!?)
-#  
-# def fft_sig (y1:np.ndarray, y2:np.ndarray,    f0 = 2_000,fs = 500_000):
-#     """
-#     Computes the fourier transform for two seperate signals and returns the results
-#     and the corresponding frequencies
-#     Args:
-#         y1 (np.ndarray): array object corresponding to raw signal.
-#         y2 (np.ndarray): array object corresponding to filtered signal.
-#     
-#     Returns:
-#        f_plot(np.ndarray): array_like of sample frequencies
-#        y_input_mag_plot(np.ndarray): Amplitude of raw signal samples
-#        y_output_mag_plot(np.ndarray): Amplitude of filtered signal samples
-#     """
-# 
-#     N = int(2_000*(fs/f0)) #TODO what is this N???
-#     f= np.linspace (0, (N-1)*(fs/N),N )
-# 
-#     yf_input = np.fft.fft(y1)
-#     y_input_mag_plot = np.abs(yf_input)/N
-#     f_plot = f[0:int(N/2+1)]
-#     y_input_mag_plot = 2*y_input_mag_plot[0:int(N/2+1)]
-#     y_input_mag_plot[0] = y_input_mag_plot[0] / 2
-# 
-#     yf_output = np.fft.fft(y2)
-#     y_output_mag_plot = np.abs(yf_output)/N
-#     y_output_mag_plot = 2* y_output_mag_plot[0:int(N/2+1)]
-#     y_output_mag_plot[0]= y_output_mag_plot[0]/2
-#     return(f_plot, y_input_mag_plot, y_output_mag_plot)
 
 class Signals_for_fft_plot:
     def __init__(self,freq,sig1:np.ndarray,sig2:np.ndarray) -> None:
@@ -308,28 +233,6 @@ def fft_sig (signals,    f0 = 2_000,fs = 500_000):
 # This function will be written to use class objects for more ease of use in 
 # importing and not to be bound to variables for less RAM usage
 #  
-# def plot_FFT (x1=np.ndarray, y1=np.ndarray, y2=np.ndarray, title=list):
-#     """
-#     Function for plotting the raw and filtered signals in
-#     frequency domain. On the x axis we plot the frequency in Hz 
-#     and on the y axis the amlitude of the sample at that frequency
-#     Args:
-#         x1 (np.ndarray): frequencies of samples(f_plot).
-#         y1 (np.ndarray): Amplitude in [dB] of raw signal samples in freq. domain. 
-#         y2 (np.ndarray): Amplitude in [dB] of filtered signal samples in freq. domain.
-#         title (list): List of titles for all the plots.
-#     """    
-#     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True)
-#     fig.suptitle(title)
-#     ax1.loglog(x1, y1)
-#     ax1.grid(True, which = 'both')
-#     ax1.set_ylabel('Amplitute [dB]')
-#     ax2.loglog(x1, y2, 'orange', label = 'output')
-#     ax2.grid(True, which='both')
-#     ax2.set_xlabel('Frequency [Hz]')
-#     ax2.set_ylabel('Amplitute [dB]')
-#     plt.legend()
-#     plt.show()
 class Fft_Plot_info:
     def __init__(self, Title:list, filter_type:str, signal_state:str) -> None:
         """Initiate a class for importing information used in fft graph
@@ -386,6 +289,7 @@ def plot_FFT (signals,
         plt.show()
 
 # Adding WT_Noise_ChannelProcessor to use the signal info from nptdms 
+# TODO remove this (DUPlICATE)  move to filters
 def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
     sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
