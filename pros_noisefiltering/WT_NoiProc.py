@@ -107,6 +107,10 @@ class WT_NoiseChannelProc():
                 operations = new_operations
                 )
         
+    def set_desc(self, desc:str):
+        return WT_NoiseChannelProc.from_obj(self, operation=None,
+                desc=desc)
+    
     def decimate(self, dec:int, offset:int=0):
         """returns a decimated data seires
 
@@ -151,7 +155,8 @@ class WT_NoiseChannelProc():
             operation = f'pass filter {fc_Hz}'
             )
     
-    def calc_spectrum(self,window='flattop', nperseg=1_024, scaling='spectrum')->Graph_data_container:
+    def calc_spectrum(self,window='flattop', nperseg=1_024, 
+                      scaling='spectrum')->Graph_data_container:
         """returns a Graph_data_container object with the power spectrum of the data. 
         uses the decimation function
 
@@ -234,7 +239,7 @@ class WT_NoiseChannelProc():
             tdms_channel (nptdms.tdms.TdmsChannel): tmds channel 
             desc (str): descirption (used)
         """
-        assert isinstance(operation, str)
+        assert isinstance(operation, str) or None is None
         # the following line allows to pass a description maybe
         desc = obj.description if kwargs.get('desc', None) is None else kwargs.get('desc', None)
         
@@ -245,7 +250,8 @@ class WT_NoiseChannelProc():
         group_name = kwargs.get('group_name', obj.group_name)
         
         new_ops = obj.operations.copy()
-        new_ops.append(operation)
+        if operation is not None:
+            new_ops.append(operation)
         return cls(desc, fs_Hz, data, channel_name, group_name, _channel_data, 
             operations=new_ops)
 # %%
@@ -317,7 +323,9 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
         ax2.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
     
-    ax2.set_title('filter frequency response for {}'.format(wt_obj.description))
+    ax2.set_title('Filter frequency response (cutoff: {}Hz) -  {}'.format(
+        filter_func.params.get('fc_Hz',None),
+        wt_obj.description))
     ax2.set_xlabel('Frequency [Hz]')
     ax2.set_ylabel('Amplitute [dB]')
     ax2.set_xscale('log')
