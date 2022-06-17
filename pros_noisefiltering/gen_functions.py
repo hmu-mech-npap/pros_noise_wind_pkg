@@ -61,6 +61,10 @@ def plot_spect_comb2(graph_objlist ,
                    marker=marker,
                    alpha=alpha
                    )
+        if kwargs.get('draw_lines',False):
+            ax.plot(gdc_obj.x, np.sqrt(gdc_obj.y), 
+                   alpha=alpha
+                   )
         xylims.append(gdc_obj.extrema)
         no_grph +=1
     

@@ -1,4 +1,4 @@
-
+#%%
 from pathlib import Path
 from matplotlib import pyplot as plt
 import scipy.signal as signal
@@ -156,7 +156,7 @@ class WT_NoiseChannelProc():
             )
     
     def calc_spectrum(self,window='flattop', nperseg=1_024, 
-                      scaling='spectrum')->Graph_data_container:
+                      scaling='density')->Graph_data_container:
         """returns a Graph_data_container object with the power spectrum of the data. 
         uses the decimation function
 
@@ -167,7 +167,7 @@ class WT_NoiseChannelProc():
         return gobj
     
     
-    def calc_spectrum_gen(self, dec:int=1, offset:int=0, window='flattop', nperseg=1_024, scaling='spectrum')->Graph_data_container:
+    def calc_spectrum_gen(self, dec:int=1, offset:int=0, window='flattop', nperseg=1_024, scaling='density')->Graph_data_container:
         """generic functio for calculating the spectrum of a time series
         adnd return a Graph_data_container object with the power spectrum of the **decimated** data. 
 
@@ -181,25 +181,13 @@ class WT_NoiseChannelProc():
         decimated_fs_Hz = self.fs_Hz/dec
         x_r,y_r = spect(self.data[offset::dec], FS=decimated_fs_Hz,window=window,nperseg= nperseg, scaling=scaling)        
         if dec==1:
-            label = f'{self.description}-{self.channel_name}'
+            label = f'{self.description}'
+            #TODO the new chain method approach does not require this. This is a remnant from the original approach. 
         else:
             label = f'{self.description}-{self.channel_name}-fs:{decimated_fs_Hz/1000:.1f}kHz '
+
         return Graph_data_container(x=x_r,y = y_r, 
             label = label)
-    
-    # def calc_spectrum_filt(self, fc_Hz:float, filt_func=filter_Butter_default)->Graph_data_container:
-    #     """ (). it can be easily substituted by filter().get_
-    #     returns a Graph_data_container object with the power spectrum of the data. 
-
-    #     Args:
-    #         fc_Hz (float): _description_
-
-    #     Returns:
-    #         Graph_data_container: _description_
-    #     """        
-    #     #TODO This should be removed in a next version
-    #     x_f,y_f = spect(self._filter(fc_Hz=fc_Hz, filter_func=filt_func), FS=self.fs_Hz)        
-    #     return Graph_data_container(x=x_f,y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_Hz}')
     
     def plot_filtered_th(self,filter_func):
         """plots the Time History
@@ -327,7 +315,7 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         filter_func.params.get('fc_Hz',None),
         wt_obj.description))
     ax2.set_xlabel('Frequency [Hz]')
-    ax2.set_ylabel('Amplitute [dB]')
+    ax2.set_ylabel('Power Spectrum density [V**2/Hz]')
     ax2.set_xscale('log')
     ax2.set_yscale('log')
     ax2.margins(0, 0.1)
@@ -336,3 +324,4 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     ax2.set_ylim([1e-8, 1e-1])
     ax2.legend()
     # plt.savefig('Bessel Filter Freq Response.png')
+# %%
