@@ -260,8 +260,10 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         filter_func, response_offset=2e-4, 
         Kolmogorov_offset=1,
         figsize=(16,9),
-        nperseg = 1024,
-        plot_th = False):
+        nperseg = 1024
+        , xlim = [1e1, 1e5]
+        ,ylim = [1e-8, 1e-1]
+        ,plot_th = False):
     #TODO make this part of WT_NoiProc 
     """plotting a comparison of raw filtered and 
 
@@ -281,11 +283,15 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     filtered = filter_func(sig, fs_Hz)
     
     # calculate spectrum 
-    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=nperseg, scaling='spectrum')
-    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=nperseg, scaling='spectrum')
+    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=nperseg, scaling='density')
+    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=nperseg, scaling='density')
 
-    wb, hb = signal.sosfreqz(sos)
-    fb = wb/(2*np.pi)
+    # #TODO: this is for testing
+    # Pxx_spec= Pxx_spec**2
+    # Pxx_spec_filt = Pxx_spec_filt**2
+
+    wb, hb = signal.sosfreqz(sos, whole=True)
+    fb = wb/(2*np.pi) # convert rad/s to Hz
     t = np.arange(0, len(sig),1, dtype='int')/fs_Hz
     
     if plot_th:
@@ -307,7 +313,7 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     ax2.semilogy(f, np.sqrt(Pxx_spec_filt), '.', label='filtered')
     if Kolmogorov_offset is not None:
         KOLMOGORV_CONSTANT = - 5.0/3
-        xs = f
+        xs = f[1:]
         ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
         ax2.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
     
@@ -320,8 +326,8 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     ax2.set_yscale('log')
     ax2.margins(0, 0.1)
     ax2.grid(which= 'both', axis= 'both')
-    ax2.set_xlim([1e1, 1e5])
-    ax2.set_ylim([1e-8, 1e-1])
+    ax2.set_xlim(xlim)
+    ax2.set_ylim(ylim)
     ax2.legend()
     # plt.savefig('Bessel Filter Freq Response.png')
 # %%
