@@ -41,7 +41,7 @@ def filt_butter_factory( filt_order = 2, fc_Hz:float=100):
         return filtered
     # additional decoration sith params dictionary
     # this is used instead of a class
-    filt_butter.params = {'filter order':2, 'fc_Hz':fc_Hz} 
+    filt_butter.params = {'filter order':filt_order, 'fc_Hz':fc_Hz} 
     return filt_butter
 filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 
@@ -278,7 +278,6 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     filt_p = filter_func.params 
     sos = signal.butter(N=filt_p['filter order'], Wn=filt_p['fc_Hz'], 
             btype= 'lp', fs=fs_Hz, output='sos')
-
     
     filtered = filter_func(sig, fs_Hz)
     
@@ -290,11 +289,10 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     # Pxx_spec= Pxx_spec**2
     # Pxx_spec_filt = Pxx_spec_filt**2
 
-    wb, hb = signal.sosfreqz(sos, whole=True)
-    fb = wb/(2*np.pi) # convert rad/s to Hz
-    t = np.arange(0, len(sig),1, dtype='int')/fs_Hz
+
     
     if plot_th:
+        t = np.arange(0, len(sig),1, dtype='int')/fs_Hz
         # plot time domain 
         fig1, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True, figsize=figsize )
         fig1.suptitle('Time Domain Filtering of signal with f1=10[Hz], f2=20[Hz] and noise')
@@ -307,8 +305,13 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         ax2.set_xlabel('Time [seconds]')
         plt.tight_layout()
     
+    
+    wb, hb = signal.sosfreqz(sos, worN=np.logspace(start=1,stop=5), whole=True, fs = fs_Hz)
+    fb = wb#/(2*np.pi) # convert rad/s to Hz
+    
     fig2, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
-    ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='filter response')
+    ax2.plot(fb, response_offset*abs(np.array(hb)), '--', lw=3, 
+             label='filter response')
     ax2.semilogy(f, np.sqrt(Pxx_spec), '.', label='raw')
     ax2.semilogy(f, np.sqrt(Pxx_spec_filt), '.', label='filtered')
     if Kolmogorov_offset is not None:
