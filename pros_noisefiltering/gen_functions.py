@@ -38,7 +38,8 @@ def plot_spect_comb2(graph_objlist ,
                     ylim = 'auto',
                     Kolmogorov_offset = None,
                     markers = ['.','o','x','_'],
-                    **kwargs,
+                    KOLMOGORV_CONSTANT = - 5/3,
+                    **kwargs
                     ):
     """ ## plots different signal power spectrums combined in one graph
     This function plots the power spectrum diagram of an arbitray  signals.
@@ -76,7 +77,6 @@ def plot_spect_comb2(graph_objlist ,
     
     # ===========================  Plot Kolmoogov Line
     if Kolmogorov_offset is not None:
-        KOLMOGORV_CONSTANT = - 5/3
         xs = np.array(graph_objlist[0].xs_lim)
         ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
         ax.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
