@@ -2,8 +2,9 @@ import numpy as np
 import pytest
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 
-def test_one():
-    pass
+# def test_one():
+#     pass
+
 
 @pytest.fixture
 def example_wtncp()->WT_NoiseChannelProc:
@@ -14,6 +15,7 @@ def example_wtncp()->WT_NoiseChannelProc:
             _channel_data= None,
             operations = ['New object (init)']
             )
+
 
 def test_create_init(example_wtncp):
     assert example_wtncp.group_name == 'Wind Measurement'
