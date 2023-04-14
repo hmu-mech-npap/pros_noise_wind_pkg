@@ -370,6 +370,7 @@ def fir_factory_constructor(fir_order=32, fc_Hz: float = 200):
 filter_fir_default = fir_factory_constructor(fir_order=2, fc_Hz=100)
 
 
+# BUG i.e. replaced by the factory method for fir systems
 class Fir_filter:
     """This class is used to take a signal as a tdms dataframe object.
 
