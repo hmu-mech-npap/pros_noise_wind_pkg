@@ -375,6 +375,15 @@ class FFT_new:
 
         self._channel_data = signal._channel_data
 
+    def fft_calc(self):
+        """Func body for calculation of the frequency domain of raw data."""
+        n = len(self.time_sec)
+        fhat = np.fft.fft(self.sig, n)                  # compute fft
+        PSD = fhat * np.conj(fhat) / n                  # Power spectrum (pr/f)
+        freq = (1/(self.dt*n)) * np.arange(n)           # create x-axis (freqs)
+        L = np.arange(1, np.floor(n/2), dtype=int)      # plot only first half
+        return Graph_data_container(freq[L], abs(PSD[L]), label="fft transform")
+
     def fft_calc_and_plot(self):
         """Func body for calculation of the frequency domain of raw data."""
         n = len(self.time_sec)
