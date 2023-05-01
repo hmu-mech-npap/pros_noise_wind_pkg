@@ -1,0 +1,15 @@
+[build-system]
+requires = [
+"setuptools>=61.0.0",
+"wheel",
+"matplotlib",
+"numpy",
+"scipy",
+"npTDMS",
+"pathlib",
+"pandas",
+"pluggy",
+"pytest",
+"pyqtgraph",
+]
+build-backend = "setuptools.build_meta"
