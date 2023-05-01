@@ -58,10 +58,13 @@ NPERSEG = 1024
 # rectangle plot
 FIGSIZE_STD = (6, 6)
 
+# basic low pass butterworth IIR filter at 200 Hz 2nd order
+filter_Butter_200 = filt_butter_factory(filt_order=2, fc_Hz=200)
+
 # cutoff frequency and FIR filter order
 fc_Hz = 200
 fir_or = 65
-
+# basic low pass FIR filter at 200 Hz 2nd order
 fir_filter_cnstr_xorder = fir_factory_constructor(fir_order=fir_or,
                                                   fc_Hz=fc_Hz)
 FIGSIZE_SQR_L = (8, 10)
@@ -82,5 +85,20 @@ plot_comparative_response(df_tdms_1_10,
 
 ```
 
-`
+### chaining the spectral density (Welch's method) and decimation operations
+
+``` python
+NPERSEG=1024<<6
+FIGSIZE = (15,10)
+plot_spect_comb2([custom_object.decimate(dec=1,offset=0).set_desc('500 kHz').calc_spectrum( nperseg=NPERSEG),
+                  custom_object.decimate(dec=10,offset=0).set_desc('50 kHz (dec=10)').calc_spectrum( nperseg=NPERSEG/10),
+                  custom_object.decimate(dec=100,offset=0).set_desc('5 kHz (dec=100)').calc_spectrum( nperseg=NPERSEG/100)
+                  ],
+                title='Comparison of decimated signal 500kHz by two orders of magnitude',
+                xlim=[1e1,2.5e5], ylim = [1e-5,0.5e-2],
+                figsize = FIGSIZE,
+                draw_lines=True
+                )
+```
+
 
