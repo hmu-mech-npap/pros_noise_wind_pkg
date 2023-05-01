@@ -53,7 +53,7 @@ def plot_spect_comb2(graph_objlist,
 
     Args:
         graph_objlist(list): a list of Graph_data_container
-        title (str): The main title of the figure 
+        title (str): The main title of the figure
         xlim (tuple): x limits of power spectrum graph
     """
     fig, ax = plt.subplots(1, 1,
@@ -120,7 +120,7 @@ def plot_spect_comb2(graph_objlist,
 
 
 # %%
-# New classes for storing signal and titles information for human readable code 
+# New classes for storing signal and titles information for human readable code
 # and faster implementation regardless the actual operation of a function
 class Axis_titles:
     """A class to store axes titles."""

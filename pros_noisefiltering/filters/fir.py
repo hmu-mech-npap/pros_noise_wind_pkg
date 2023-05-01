@@ -90,7 +90,10 @@ def filt_sig(coeff: np.ndarray, order: int, FS: float, Raw: list):
 
     Usage example:
     ==============
-    >>> Filt, Blank, chunked_time, TIME_NO_SHIFT_chunked=fir.filt_sig(coeff=filter_coeff,order=20, FS=FS,Raw=CHUNKED_DATA)
+    >>> Filt, Blank, chunked_time, TIME_NO_SHIFT_chunked=fir.filt_sig(
+                        coeff=filter_coeff,
+                        order=20, FS=FS,
+                        Raw=CHUNKED_DATA)
     """
     # Filtering the raw signal with the above FIR filter
     chunked_time = []
