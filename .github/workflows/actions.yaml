@@ -1,0 +1,84 @@
+
+name: Testing
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.8", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: pros_noisefiltering
+      #     key:  pros_noisefiltering-${{ matrix.targetPlatform }}
+      #     restore-keys: pros_noisefiltering
+      - name: Install dependencies and personal package (./pypkg/)
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest numpy scipy matplotlib npTDMS pluggy pandas
+          python -m pip install -e .
+
+  test_main_class:
+    runs-on: ${{matrix.os}}
+    needs: build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          pip install pytest numpy scipy matplotlib npTDMS pluggy pandas
+          python -m pip install -e .
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: pros_noisefiltering
+      #     key:  pros_noisefiltering-${{ matrix.targetPlatform }}
+      #     restore-keys: pros_noisefiltering
+      - name: Test with pytest
+        run: |
+          pytest -k test_WT
+
+  test_my_functions:
+    runs-on: ${{matrix.os}}
+    needs: build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          pip install pytest numpy scipy matplotlib npTDMS pluggy pandas
+          python -m pip install -e .
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: pros_noisefiltering
+      #     key:  pros_noisefiltering-${{ matrix.targetPlatform }}
+      #     restore-keys: pros_noisefiltering
+      - name: Test with pytest
+        run: |
+          pytest -k test_functions
