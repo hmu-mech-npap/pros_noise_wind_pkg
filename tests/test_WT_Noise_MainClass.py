@@ -1,3 +1,4 @@
+"""Tests for the main class for signal processing."""
 import numpy as np
 import pytest
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
@@ -8,6 +9,7 @@ from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 
 @pytest.fixture
 def example_wtncp() -> WT_NoiseChannelProc:
+    """Construct and object for testing the behavior of main class."""
     return WT_NoiseChannelProc(desc='description sample', fs_Hz=100,
                                data=np.zeros((100,)),
                                channel_name='Torque',
@@ -18,6 +20,7 @@ def example_wtncp() -> WT_NoiseChannelProc:
 
 
 def test_create_init(example_wtncp):
+    """Assert the initial constructor."""
     assert example_wtncp.group_name == 'Wind Measurement'
     assert example_wtncp.channel_name == 'Torque'
     assert example_wtncp._channel_data is None
@@ -27,6 +30,7 @@ def test_create_init(example_wtncp):
 
 
 def test_create_from_obj(example_wtncp):
+    """Make a copy to test .from_object() method."""
     new_obj = WT_NoiseChannelProc.from_obj(example_wtncp,
                                            operation='copy')
     assert new_obj.group_name == 'Wind Measurement'
@@ -40,6 +44,7 @@ def test_create_from_obj(example_wtncp):
 
 
 def test_decimate(example_wtncp):
+    """Evaluate decimation operation."""
     new_obj = example_wtncp.decimate(dec=2)
     assert new_obj.group_name == 'Wind Measurement'
     assert new_obj.channel_name == 'Torque'
@@ -53,6 +58,7 @@ def test_decimate(example_wtncp):
 
 
 def test_filter(example_wtncp):
+    """Evaluate the .filter() class method."""
     new_obj = example_wtncp.filter(fc_Hz=10)
     assert new_obj.group_name == 'Wind Measurement'
     assert new_obj.channel_name == 'Torque'
