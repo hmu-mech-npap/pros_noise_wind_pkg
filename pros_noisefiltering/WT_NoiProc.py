@@ -1,6 +1,8 @@
 """Main class for processing a tdms dataframe."""
 # %%
 # from pathlib import Path
+# logging should go before matplotlib
+import logging
 from matplotlib import pyplot as plt
 import scipy.signal as signal
 import numpy as np
@@ -11,7 +13,6 @@ import nptdms
 
 from pros_noisefiltering.gen_functions import spect
 from pros_noisefiltering.Graph_data_container import Graph_data_container
-import logging
 logging.basicConfig(level=logging.WARNING)
 
 
