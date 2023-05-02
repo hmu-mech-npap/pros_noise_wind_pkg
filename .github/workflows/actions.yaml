@@ -56,7 +56,7 @@ jobs:
       #     restore-keys: pros_noisefiltering
       - name: Test with pytest
         run: |
-          pytest -k test_WT
+          pytest --color=yes --verbose -k test_WT
 
   test_my_functions:
     runs-on: ${{matrix.os}}
@@ -83,4 +83,4 @@ jobs:
       #     restore-keys: pros_noisefiltering
       - name: Test with pytest
         run: |
-          pytest -k test_functions
+          pytest --color=yes --verbose -k test_functions

@@ -314,18 +314,22 @@ class FFT_new:
         We should be able to integrate this in WT_Noi_proc.
         """
         self.Title = title
-        self.sr = signal.fs_Hz
-        self.sig = signal.data
+        self.fs_Hz = signal.fs_Hz
+        self.data = signal.data
         self.ind = signal.data_as_Series.index
-        self.dt = 1 / int(self.sr)
+        self.dt = 1 / int(self.fs_Hz)
         self.time_sec = self.ind * self.dt
+        self.description = ''
 
         self._channel_data = signal._channel_data
+        self.channel_name = signal.channel_name
+        self.group_name = signal.group_name
+        self.operations = signal.operations
 
     def fft_calc(self):
         """Func body for calculation of the frequency domain of raw data."""
         n = len(self.time_sec)
-        fhat = np.fft.fft(self.sig, n)                  # compute fft
+        fhat = np.fft.fft(self.data, n)                  # compute fft
         PSD = fhat * np.conj(fhat) / n                  # Power spectrum (pr/f)
         freq = (1/(self.dt*n)) * np.arange(n)           # create x-axis (freqs)
         L = np.arange(1, np.floor(n/2), dtype=int)      # plot only first half
@@ -341,7 +345,7 @@ class FFT_new:
         plt.title(self.Title)
         plt.xlabel('Time [s]')
         plt.ylabel('Amplitute (Voltage)')
-        plt.plot(self.time_sec, self.sig)
+        plt.plot(self.time_sec, self.data)
         # plt.loglog(freq[L],(PSD[L]))
 
         plt.sca(axs[1])

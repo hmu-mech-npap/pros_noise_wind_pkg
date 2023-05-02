@@ -38,11 +38,29 @@ def fft_func(example_wtncp) -> WT_NoiseChannelProc:
 
 def test_fft_info_init_func(fft_func):
     """Test the initially constructed object and attributes."""
-    filt = FFT_new(fft_func, title=None)
-    assert filt.sr == 1000
+    filt = FFT_new(fft_func, title='sample testing')
+
+    assert isinstance(filt, FFT_new)
+    assert filt.Title == 'sample testing'
+    assert filt.fs_Hz == 1000
     assert len(filt.time_sec) == len(fft_func.data)
-    assert fft_func._channel_data is None
-    assert fft_func.operations is not None
+    assert filt._channel_data is None
+    assert filt.operations is not None
+    assert filt.group_name is not None
+    assert filt.description is not None
+
+
+def test_fft_calc_op(fft_func):
+    """Test calculation of fft for a given signal."""
+    fft_data = FFT_new(fft_func,
+                       title=None).fft_calc()
+
+    assert len(fft_data.x) == len(fft_data.y)
+    assert fft_data.label == 'fft transform'
+    assert fft_data.x.mean() > fft_func.data.mean()
+    assert fft_data.y.mean() > fft_func.data.mean()
+    assert isinstance(fft_data.xs_lim, list)
+    assert np.std(fft_data.xs_lim) != np.std(fft_data.ys_lim)
 
 
 @patch("matplotlib.pyplot.show")
@@ -56,6 +74,32 @@ def fir_wrapper(example_wtncp):
     """Make a copy for testing the FIR methods."""
     obj_filt = WT_NoiseChannelProc.from_obj(example_wtncp, operation='copy')
     return (obj_filt)
+
+
+@pytest.fixture
+def test_factory_fir(fir_wrapper):
+    """Test the fir factory method ensure proper operation."""
+    fir_5_Hz = fir_factory_constructor(fir_order=30, fc_Hz=5)
+    filtered_signal = fir_wrapper.filter(fc_Hz=5, filter_func=fir_5_Hz)
+
+    assert isinstance(filtered_signal.data, np.ndarray)
+    assert filtered_signal.data.shape is not None
+
+    assert isinstance(fir_5_Hz.params, dict)
+    assert fir_5_Hz.params is not None
+    assert fir_5_Hz.params['fc_Hz'] == 5
+    assert fir_5_Hz.params['filter order'] == 30
+    return filtered_signal
+
+
+def test_filtering(fir_wrapper, test_factory_fir):
+    """Testing the effects from filtering with FIR factory method."""
+    assert "{:.1f}".format(
+        test_factory_fir.data.mean()) == (
+            "{:.1f}".format(
+                fir_wrapper.data.mean()))
+
+    assert np.std(test_factory_fir.data) < np.std(fir_wrapper.data)
 
 
 @patch("matplotlib.pyplot.show")
