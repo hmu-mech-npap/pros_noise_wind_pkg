@@ -334,12 +334,6 @@ class FFT_new:
 
     def fft_calc_and_plot(self):
         """Func body for calculation of the frequency domain of raw data."""
-        n = len(self.time_sec)
-        fhat = np.fft.fft(self.sig, n)                  # compute fft
-        PSD = fhat * np.conj(fhat) / n                  # Power spectrum (pr/f)
-        freq = (1/(self.dt*n)) * np.arange(n)           # create x-axis (freqs)
-        L = np.arange(1, np.floor(n/2), dtype=int)      # plot only first half
-
         fig, axs = plt.subplots(2, 1)
 
         plt.sca(axs[0])
@@ -351,7 +345,7 @@ class FFT_new:
         # plt.loglog(freq[L],(PSD[L]))
 
         plt.sca(axs[1])
-        plt.loglog(freq[L], abs(PSD[L]))
+        plt.loglog(self.fft_calc().x, self.fft_calc().y)
         plt.title('Frequency domain')
         plt.xlabel('Frequencies [Hz]')
         plt.ylabel('Power/Freq')

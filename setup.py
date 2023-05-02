@@ -5,9 +5,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pros_noisefiltering", # Replace with your own username
-    version="0.0.4",
+    version="0.0.5",
     author="N. Papadakis, N. Torosian",
-    author_email="npapnet@gmail.com",
+    author_email="npapnet@gmail.com, goodvibrations32@protonmail.com",
     description="A package for processing data from Wind Turbine Blades at Wind Energ Laboratory",
     long_description=long_description,
     long_description_content_type="text/markdown",
