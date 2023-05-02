@@ -13,6 +13,21 @@ and then
 ```console
 python setup.py install
 ```
+- Latest recommended way for installing pkg's.
+
+As mentioned [here](https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html#summary) using `python setup.py install` is deprecated and will be removed at some point. The `newer` way tested using `pip 23.0.1` and `python 3.10.x` the equivalent actions to install unpublished packages for local use is the following.
+```console
+cd path/to/pkg
+```
+- `develop` mode
+``` console
+pip install -e .
+```
+- `normal` installation
+``` console
+pip install
+```
+
 ## usage
 
 to use it import like normal:
