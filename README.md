@@ -8,6 +8,9 @@ Author: Nikolaos Papadakis, N. Torosian
 
 ```console
 cd path/to/pkg
+```
+and then 
+```console
 python setup.py install
 ```
 ## usage
@@ -32,7 +35,7 @@ from nptdms import TdmsFile
 GROUP_NAME = 'Wind Measurement'
 CHAN_NAME = 'Wind2'
 
-data = TDMSFile(Path('path/to/data.tdms'))
+tdms_raw_WT = TDMSFile(Path('path/to/data.tdms'))
 
 custom_object = WT_NoiseChannelProc.from_tdms(
     tdms_raw_WT[GROUP_NAME][CHAN_NAME],
@@ -46,6 +49,32 @@ plot_spect_comb2([custom_object.calc_spectrum_gen(dec=1, nperseg=100*1024),
                  xlim=[1e1, 1e5], ylim=[1e-4, 5e-2]
                  )
 ```
+### filtering a signal with custom_object method `.filter()`
+This function is applying a filtering factory method from the package and is 
+currently implementing a `butterworth IIR` and a `simple FIR` both low-pass 
+filters. For now this is all we need for processing our data (EMI noise after 
+5 kHz).
+
+- Default IIR filter with chosen cutoff frequency
+``` python
+filtered_signal = custom_object.filter(fc_Hz=2000, desc='butterworth low')
+```
+
+- Default FIR filter with chosen cutoff frequency
+``` python
+fc_Hz = 2000
+fir_or = 65
+# basic low pass FIR filter at 200 Hz 2nd order
+
+fir_filter = fir_factory_constructor(fir_order=fir_or,
+                                     fc_Hz=fc_Hz)
+
+filtered_signal = custom_object.filter(fc_Hz=2000, 
+                                       desc='simple fir low',
+                                       filter_func=fir_filter)
+```
+
+
 ### comparing results from `IIR` and `FIR` filters
 
 ``` python
@@ -68,7 +97,7 @@ fir_or = 65
 fir_filter_cnstr_xorder = fir_factory_constructor(fir_order=fir_or,
                                                   fc_Hz=fc_Hz)
 FIGSIZE_SQR_L = (8, 10)
-plot_comparative_response(df_tdms_1_10,
+plot_comparative_response(custom_object,
                           filter_func=fir_filter_cnstr_xorder,
                           response_offset=2e-4,
                           Kolmogorov_offset=4e0,
@@ -76,7 +105,7 @@ plot_comparative_response(df_tdms_1_10,
                           # xlim=0e0,
                           figsize=FIGSIZE_SQR_L)
 
-plot_comparative_response(df_tdms_1_10,
+plot_comparative_response(custom_object,
                           filter_func=filter_Butter_200,
                           response_offset=2e-4,
                           Kolmogorov_offset=4e0,
