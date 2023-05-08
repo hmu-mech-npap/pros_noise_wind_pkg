@@ -183,10 +183,9 @@ class WT_NoiseChannelProc():
         ds_filt = self._filter(fc_Hz=fc_Hz,
                                filter_func=filter_func,
                                fs_Hz=fs_Hz)
-        description = (
-            desc if desc is not None else self.description + f"_fc:{fc_Hz}")
+        # description = (
+        #     desc if desc is not None else self.description + f"_fc:{fc_Hz}")
         return WT_NoiseChannelProc.from_obj(self,
-                                            desc=description,
                                             data=ds_filt.values,
                                             operation=f'pass filter {fc_Hz}'
                                             )
