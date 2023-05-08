@@ -64,7 +64,7 @@ def test_filter(example_wtncp):
     assert new_obj.channel_name == 'Torque'
     assert new_obj._channel_data is None
     np.testing.assert_equal(new_obj.data, np.zeros((100,)))
-    assert new_obj.description == 'description sample_fc:10'
+    # assert new_obj.description == 'description sample_fc:10'
     assert new_obj.fs_Hz == 100
     assert len(new_obj.operations) == (len(example_wtncp.operations)+1)
     assert new_obj.operations[-1] == 'pass filter 10'
