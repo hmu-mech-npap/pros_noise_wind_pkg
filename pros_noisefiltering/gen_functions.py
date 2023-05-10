@@ -18,12 +18,14 @@ def spect(x: np.ndarray,
     """
     # Welch's method for power spectrum.
 
-    Estimate the Power spectrum of a signal using the Welch method
+    Estimate the Power spectrum of a signal using the Welch method.
+
     Args:
-        x (np.ndarray):Column in dataframe managed as list of ndarrays.
+    - x (np.ndarray):Column in dataframe managed as list of ndarrays.
+
     Returns:
-       z(np.ndarray): Array of sample frequencies
-       y(np.ndarray): Array of power spectrum of x
+    - z(np.ndarray): Array of sample frequencies
+    - y(np.ndarray): Array of power spectrum of x
     """
     z, y = signal.welch(x,
                         FS,
@@ -52,9 +54,9 @@ def plot_spect_comb2(graph_objlist,
     `signal.welch()` function.
 
     Args:
-        graph_objlist(list): a list of Graph_data_container
-        title (str): The main title of the figure
-        xlim (tuple): x limits of power spectrum graph
+    - graph_objlist(list): a list of Graph_data_container
+    - title (str): The main title of the figure
+    - xlim (tuple): x limits of power spectrum graph
     """
     fig, ax = plt.subplots(1, 1,
                            figsize=kwargs.get('figsize',
@@ -197,13 +199,13 @@ def data_import(file_path: str, file_name_of_raw: str):
     """File import script and data chunking for faster overall process time.
 
     Args:
-        file_path (str): the file path of the folder containing the HDF5 file
-        file_name_of_raw (str): the name of the file to import
+    - file_path (str): the file path of the folder containing the HDF5 file
+    - file_name_of_raw (str): the name of the file to import
     Returns:
-        MATRIX_RAW (list): list of np.ndarrays transformed columns from dataset
-        L (list): a list of the dataframes keys in str format
-        List_of_chunked (list): Here we store the sampled raw
-        signal from the dataset with a constant rate
+    - MATRIX_RAW (list): list of np.ndarrays transformed columns from dataset
+    - L (list): a list of the dataframes keys in str format
+    - List_of_chunked (list): Here we store the sampled raw
+    signal from the dataset with a constant rate
     """
     f_1 = pd.HDFStore(path=f'{file_path}{file_name_of_raw}', mode='r')
     print('The data frame key is: ', f_1.keys())
@@ -253,7 +255,7 @@ class FFT_new:
         self.operations = signal.operations
 
     def fft_calc(self):
-        """Func body for calculation of the frequency domain of raw data."""
+        """Calculate the frequency domain of raw data using fft algorithm."""
         n = len(self.time_sec)
         fhat = np.fft.fft(self.data, n)                  # compute fft
         PSD = fhat * np.conj(fhat) / n                  # Power spectrum (pr/f)
@@ -263,7 +265,8 @@ class FFT_new:
                                     label="fft transform")
 
     def fft_calc_and_plot(self):
-        """Func body for calculation of the frequency domain of raw data."""
+        """Plot the frequency and time domain of the signal calculated
+        above."""
         fig, axs = plt.subplots(2, 1)
 
         plt.sca(axs[0])

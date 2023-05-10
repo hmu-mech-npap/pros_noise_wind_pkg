@@ -22,11 +22,13 @@ logging.basicConfig(level=logging.WARNING)
 def filt_butter_factory(filt_order=2, fc_Hz: float = 100):
     """Construct a factory method that produces a BUTTERWORTH filter function.
 
-    with a filter order and a cutoff frequency
+    Here we construct a butterworth IIR filter with a filter order and
+    a cutoff frequency passed as arguments. The function returns a filter using
+    `scipy.signal` module to generate the it.
 
     Args:
-        filt_order (int, optional)  : Filter order. Defaults to 2.
-        fc_Hz (float, optional)     : cut off frequency in Hz (defaults to 100)
+    - filt_order (int, optional)  : Filter order. Defaults to 2.
+    - fc_Hz (float, optional)     : cut off frequency in Hz (defaults to 100)
     """
     def filt_butter(ds: np.ndarray,
                     fs_Hz: float, fc_Hz: float = fc_Hz,
@@ -34,13 +36,15 @@ def filt_butter_factory(filt_order=2, fc_Hz: float = 100):
         """Apply filtering to np.array with fs_Hz data, with cuffoff frequency.
 
         Args:
-            ds (np.ndarray): _description_
-            fs_Hz (float): _description_
-            fc_Hz (int, optional): cutoff frequency of filter(low pass def:100)
-            filt_order (int, optional): _description_. Defaults to 2. def:2
+        - ds (np.ndarray): data signal object
+        - fs_Hz (float): sampling frequency
+        - fc_Hz (int, optional): cutoff frequency of filter(low pass def:100)
+        - filt_order (int, optional): The order of the filter (number of
+        coeff.) to be produced. Defaults to 2. def:2
 
         Returns:
-            _type_: _description_
+        - filtered (signal.sosfilt()): The filter with cutoff and order defined
+        as arguments
         """
         sos = signal.butter(filt_order, fc_Hz,
                             'lp', fs=fs_Hz,
@@ -100,8 +104,8 @@ class WT_NoiseChannelProc():
         """Return another object.
 
         Args:
-            fr_Hz (float) : recording frequency (with averaging)
-            desc (str) : description
+        - fr_Hz (float) : recording frequency (with averaging)
+        - desc (str) : description
             - Defaults to None: ie. add suffix _Av:<fr_Hz>)
         """
         ds = self.data_as_Series
@@ -134,11 +138,11 @@ class WT_NoiseChannelProc():
         """Return a decimated data seires.
 
         Args:
-            dec (int): decimation factor
-            offset (int): initial offset
+        - dec (int): decimation factor
+        - offset (int): initial offset
 
         Returns:
-            _type_: a decimated data series.
+        - WT_NoiseChannelProc.obj: a decimated data series.
         """
         decimated_fs_Hz = self.fs_Hz/dec
 
@@ -198,11 +202,11 @@ class WT_NoiseChannelProc():
         """Return a Graph_data_container object.
 
         with:
-         - the power spectrum of the data.
-         - uses the decimation function
+        - the power spectrum of the data.
+        - uses the decimation function
 
         Returns:
-            classmethod: Graph_data_container
+        - classmethod: Graph_data_container
         """
         gobj = self.calc_spectrum_gen(dec=1, window=window,
                                       nperseg=nperseg, scaling=scaling)
@@ -219,11 +223,13 @@ class WT_NoiseChannelProc():
         of the **decimated** data.
 
         Args:
-            dec (int): decimation factor
-            offset (int, optional): offset. Defaults to 0.
+        - dec (int): decimation factor
+        - offset (int, optional): offset.
+            - Defaults to 0.
 
         Returns:
-            Graph_data_container: _description_
+        - Graph_data_container: Containing the spectral density of the given
+        signal.
         """
         decimated_fs_Hz = self.fs_Hz/dec
         x_r, y_r = spect(self.data[offset::dec],
@@ -246,7 +252,7 @@ class WT_NoiseChannelProc():
         """Plot the Time History.
 
         Args:
-            fc_Hz (_type_): _description_
+        - filter_func (factory method): Choose the wanted filter
         """
         plt.plot(self.data, label='raw')
         plt.plot(self.filter(filter_func=filter_func),
@@ -254,13 +260,13 @@ class WT_NoiseChannelProc():
 
     @classmethod
     def from_tdms(cls, tdms_channel: nptdms.tdms.TdmsChannel, desc: str):
-        """Initiate factory method that generates an object class.
+        """## Initiate factory method that generates an object class.
 
-        # TOD need to change the init function and test.
+        #### TOD need to change the init function and test.
 
         Args:
-            tdms_channel (nptdms.tdms.TdmsChannel): tmds channel
-            desc (str): descirption (used)
+        - tdms_channel (nptdms.tdms.TdmsChannel): tmds channel name
+        - desc (str): descirption (used)
         """
         _channel_data = tdms_channel
         # desc
@@ -276,9 +282,9 @@ class WT_NoiseChannelProc():
 
     @classmethod
     def from_obj(cls, obj, operation: str = None, **kwargs):
-        """Create factory method that generates an object class.
+        """## Create factory method that generates an object class.
 
-        if parameters are not provided the obj values are used.
+        ### If parameters are not provided the obj values are used.
 
         Args:
             tdms_channel (nptdms.tdms.TdmsChannel): tmds channel
@@ -305,11 +311,12 @@ class WT_NoiseChannelProc():
 
 # %%
 class Plotter_Class():
-    """# This is a class that can take different object.
+    """# This is a class that can take different objects for plotting.
 
-    and takes their raw data and plot:
-    - Time histories
-    - spectrums
+    Takes their raw data and plots:
+    - a overview for the signal in frequency and time domains
+    - Time histories (Not Implemented)
+    - spectrums (Not Implemented)
     """
 
     # def __init__(self):
@@ -322,7 +329,10 @@ class Plotter_Class():
 
         Construct a GraphicsLayoutWidget and place many graphs in it.
         - Raw and filtered signal in first row
-            - filtering only with butterworth right now
+            - filtering with
+                - butterworth IIR filter
+                - simple FIR filter
+
         - frequency domain of the filtered fignal
             - using fft algorithm
         - Spectral density of the filtered signal
@@ -446,9 +456,11 @@ def plot_comparative_response(wt_obj,   # cutoff frequency
     """#TOD make this part of WT_NoiProc.
 
     Args:
-        wt_obj (_type_): _description_
-        response_offset (_type_, optional): _description_. Defaults to 2e-4.
-        figsize (tuple, optional): _description_. Defaults to (16,9).
+    - wt_obj (Graph_data_container): List of graph containers
+    - response_offset (float, optional): Setting a response offset.
+        - Defaults to 2e-4.
+    - figsize (tuple, optional): Determining the size of the produced figure.
+        - Defaults to (16,9).
     """
     sig = wt_obj.data
     fs_Hz = wt_obj.fs_Hz
