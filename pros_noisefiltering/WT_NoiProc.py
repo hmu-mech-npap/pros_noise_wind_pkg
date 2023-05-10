@@ -359,10 +359,12 @@ class Plotter_Class():
             # Enable antialiasing for prettier plots
             pg.setConfigOptions(antialias=True)
 
+            title = f"{each.description}"
+
             p1_raw = win.addPlot(row=0,
                                  col=0,
                                  colspan=1,
-                                 title=f"{each.description}(m/s)")
+                                 title=title)
             p1_raw.setLabels(bottom='time duration (s)',
                              left='Raw sensor Voltage',)
 
