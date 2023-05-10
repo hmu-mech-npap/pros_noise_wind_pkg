@@ -84,8 +84,6 @@ jobs:
       #     path: pros_noisefiltering
       #     key:  pros_noisefiltering-${{ matrix.targetPlatform }}
       #     restore-keys: pros_noisefiltering
-
-      - if: ${{ steps.mystuff.outputs.cache-hit == 'true' }}
         name: Test with pytest
         run: |
           pytest --color=yes --verbose -k test_functions
