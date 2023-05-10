@@ -84,7 +84,7 @@ jobs:
       #     path: pros_noisefiltering
       #     key:  pros_noisefiltering-${{ matrix.targetPlatform }}
       #     restore-keys: pros_noisefiltering
-        name: Test with pytest
+      - name: Test with pytest
         run: |
           pytest --color=yes --verbose -k test_functions
   test_plotter_class_ops:
