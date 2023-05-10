@@ -11,7 +11,9 @@ import pandas as pd
 import nptdms
 # from nptdms import TdmsFile
 
-from pros_noisefiltering.gen_functions import spect
+import pyqtgraph as pg
+import pyqtgraph.exporters
+from pros_noisefiltering.gen_functions import spect, FFT_new
 from pros_noisefiltering.Graph_data_container import Graph_data_container
 logging.basicConfig(level=logging.WARNING)
 
@@ -303,15 +305,134 @@ class WT_NoiseChannelProc():
 
 # %%
 class Plotter_Class():
-    # TODO Not Implemented
-    """#TODOthis is a class that can take different object.
+    """# This is a class that can take different object.
 
     and takes their raw data and plot:
     - Time histories
     - spectrums
     """
 
-    pass
+    # def __init__(self):
+    #     """Reuse original self object."""
+    #     super.__init__()
+
+    @staticmethod
+    def plot_signal_all_doms(signals, filt_func=filter_Butter_default):
+        """Plot a coprehensive and analytical figure with the signal info.
+
+        Construct a GraphicsLayoutWidget and place many graphs in it.
+        - Raw and filtered signal in first row
+            - filtering only with butterworth right now
+        - frequency domain of the filtered fignal
+            - using fft algorithm
+        - Spectral density of the filtered signal
+            - with Welch's method
+        Parameters
+        ---
+        - signal:
+            - WT_NoiseChannelProc object
+
+        Returns
+        ---
+        - win:
+            - GraphicsLayoutWidget.GraphicsLayoutWidget object
+        """
+        for each in signals:
+            filtrd = each.filter(fc_Hz=filt_func.params['fc_Hz'],
+                                 filter_func=filt_func)
+
+            # make a nice legend for filtered plot
+            if filt_func.params['filter order'] > 25:
+                filtrd.operations.append(
+                    f'simple FIR low-pass {filt_func.params["fc_Hz"]} Hz')
+            elif filt_func.params['filter order'] < 25:
+                filtrd.operations.append(
+                    f'butterworth IIR low-pass {filt_func.params["fc_Hz"]} Hz')
+
+            freq_dom_filtrd = FFT_new(filtrd,
+                                      title=
+                                      f"Time domain filtered with {filtrd.description}")
+            win = pg.GraphicsLayoutWidget(show=True,
+                                          title="Basic plotting examples")
+            win.resize(1920, 1080)
+            win.setWindowTitle('pyqtgraph example: Plotting')
+            # Enable antialiasing for prettier plots
+            pg.setConfigOptions(antialias=True)
+
+            p1_raw = win.addPlot(row=0,
+                                 col=0,
+                                 colspan=1,
+                                 title=f"{each.description}(m/s)")
+            p1_raw.setLabels(bottom='time duration (s)',
+                             left='Raw sensor Voltage',)
+
+            p1_raw.showGrid(y=True)
+            p1_raw.plot(freq_dom_filtrd.time_sec,
+                        each.data,
+                        pen=(0, 255, 0, 35),
+                        name="Raw signal")
+
+            p1_filt = win.addPlot(row=0,
+                                  col=1,
+                                  title='Filtered signal')
+            p1_filt.setLabels(bottom='time duration (s)', left='')
+            p1_filt.showGrid(y=True)
+            p1_filt.addLegend()
+            p1_filt.setYRange(filtrd.data.min() - 0.1,
+                              filtrd.data.max() + 0.1)
+            p1_filt.plot(freq_dom_filtrd.time_sec,
+                         filtrd.data,
+                         pen=(0, 0, 255),
+                         name=(
+                             f"{filtrd.operations.pop(2)}"))
+
+            p2_filt_fft = win.addPlot(row=1,
+                                      col=0,
+                                      rowspan=1,
+                                      colspan=2,
+                                      padding=10,
+                                      title="Filtered signal Frequency domain representation")
+            data = freq_dom_filtrd.fft_calc()
+            p2_filt_fft.setLogMode(x=True, y=True)
+            p2_filt_fft.showGrid(x=True, y=True)
+            p2_filt_fft.setLabels(bottom='Frequencies in Hz',
+                                  left='Power/Freq',
+                                  top='')
+            # p2.setLabel(axis='bottom', text='Frequencies in Hz')
+            # p2.setLabel(axis='left', text='Power/Freq')
+            p2_filt_fft.plot(data.x, data.y,
+                             pen=(50, 50, 250),
+                             fillLevel=-18,
+                             brush=(250, 50, 50, 100))
+
+            p3_filt_spect = win.addPlot(row=2,
+                                        col=0,
+                                        rowspan=1,
+                                        colspan=2,
+                                        padding=10,
+                                        title="Filtered signal Spectral density (welch)")
+            welch = filtrd.calc_spectrum_gen(nperseg=1024 << 6)
+            p3_filt_spect.setLogMode(x=True, y=True)
+            p3_filt_spect.showGrid(x=True, y=True)
+            p3_filt_spect.setLabels(bottom='Frequencies in Hz', left='dB',
+                                    top='')
+            # p3_filt_spect.setYRange(-5, -18)
+            # p2.setLabel(axis='bottom', text='Frequencies in Hz')
+            # p2.setLabel(axis='left', text='Power/Freq')
+            p3_filt_spect.plot(welch.x, welch.y,
+                               pen=(50, 50, 250),
+                               fillLevel=-18,
+                               brush=(250, 50, 50, 100))
+
+            # save to a file somewhere
+            exporter = pg.exporters.ImageExporter(win.scene())
+            exporter.parameters()['width'] = 1920   # also effects the height
+            exporter.parameters()['antialias'] = True
+            # exporter.export('./sig_proc_plots/test.jpg')
+            # print("1")
+            pg.exec()
+
+            # pass
 
 
 def plot_comparative_response(wt_obj,   # cutoff frequency
@@ -322,7 +443,7 @@ def plot_comparative_response(wt_obj,   # cutoff frequency
                               xlim=[1e1, 1e5],
                               ylim=[1e-8, 1e-1],
                               plot_th=False):
-    """#TODO make this part of WT_NoiProc.
+    """#TOD make this part of WT_NoiProc.
 
     Args:
         wt_obj (_type_): _description_
@@ -444,13 +565,15 @@ def fir_factory_constructor(fir_order=32, fc_Hz: float = 200):
         # this is crusial for elimination of ending ripples see image above
         sos_fir_mode = signal.tf2sos(fir_filt_coeff, 1)
         sos_filt_data = signal.sosfilt(sos_fir_mode, ds-ds[0])+ds[0]
-        warmup = fir_filt_order-1
-        uncorrupted_output = sos_filt_data[warmup:]
+        # warmup = fir_filt_order-1
+        # uncorrupted_output = sos_filt_data[warmup:]
         # filt_sig_time_int = time[warmup:]-((warmup/2)/fs_hz)
-        return uncorrupted_output           # uncorr_sos_output
+        # return uncorrupted_output           # uncorr_sos_output
+        return sos_filt_data
 
     # Add the parameter attribute for checking filter response
-    fir_filter.params = {'filter order': fir_order, 'fc_Hz': fc_Hz}
+    fir_filter.params = {'filter order': fir_order, 'fc_Hz': fc_Hz,
+                         'filter type': 'simple fir'}
     return fir_filter
 
 

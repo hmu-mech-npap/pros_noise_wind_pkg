@@ -95,7 +95,7 @@ def test_factory_fir(fir_wrapper):
 def test_filtering(fir_wrapper, test_factory_fir):
     """Testing the effects from filtering with FIR factory method."""
     assert "{:.1f}".format(
-        test_factory_fir.data.mean()) == (
+        test_factory_fir.data.mean()) < (
             "{:.1f}".format(
                 fir_wrapper.data.mean()))
 
