@@ -145,4 +145,42 @@ plot_spect_comb2([custom_object.decimate(dec=1,offset=0).set_desc('500 kHz').cal
                 )
 ```
 
+## Producing a signal overview figure
+By leveraging `pyqtgraph` and `PyQt5` we construct a multi-graph plot for the signal.
+
+- Plotting 
+    - first row
+      - raw signal (upper left corner)
+      - filtered signal with the chosen filter type (see legend) in time domain (upper right)
+    - second and third rows
+      - the filter output
+        - in frequency domain (FFT transform)
+        - spectral density (Welch method)
+
+### Usage
+
+``` python
+from pros_noisefiltering.WT_NoiProc import (Plotter_Class, 
+                                            fir_factory_constructor,
+                                            filt_butter_factory)
+
+signal_analyzer = Plotter_Class()
+
+a_fir = fir_factory_constructor(fir_order=32, fc_Hz=2000)
+a_butter = filt_butter_factory(filt_order=2, fc_Hz=2000)
+
+data_to_process = [custom_object_0,
+                   custom_object_1,
+                   custom_object_2]
+# For butterworth
+signal_analyzer.plot_signal_all_doms(signals=data_to_process,
+                                     filt_func=a_butter
+                                     )
+# For FIR
+signal_analyzer.plot_signal_all_doms(signals=data_to_process,
+                                     filt_func=a_fir
+                                     )
+
+```
+
 
