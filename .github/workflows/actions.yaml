@@ -2,13 +2,15 @@
 name: Testing
 
 on:
-  push:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - converted_to_draft
     branches:
       - master
-  pull-request:
-    branches:
-      - master
-
 jobs:
   build:
     runs-on: ${{matrix.os}}
