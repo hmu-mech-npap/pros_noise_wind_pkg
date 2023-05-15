@@ -3,10 +3,13 @@
 # from pathlib import Path
 # logging should go before matplotlib
 import logging
+from pathlib import Path
 from matplotlib import pyplot as plt
 import scipy.signal as signal
 import numpy as np
 import pandas as pd
+import time
+import re
 
 import nptdms
 # from nptdms import TdmsFile
@@ -324,28 +327,37 @@ class Plotter_Class():
     #     super.__init__()
 
     @staticmethod
-    def plot_signal_all_doms(signals, filt_func=filter_Butter_default):
-        """Plot a coprehensive and analytical figure with the signal info.
+    def plot_signal_all_doms(signals, filt_func=filter_Butter_default,
+                             export_only: bool = True):
+        """## Plot a coprehensive and analytical figure with the signal info.
 
         Construct a GraphicsLayoutWidget and place many graphs in it.
-        - Raw and filtered signal in first row
+        1. Raw and filtered signal in first row
             - filtering with
                 - butterworth IIR filter
                 - simple FIR filter
 
-        - frequency domain of the filtered fignal
-            - using fft algorithm
-        - Spectral density of the filtered signal
+        2. frequency domain of the filtered fignal (fft)
+
+        3. Spectral density of the filtered signal
             - with Welch's method
+
         Parameters
         ---
-        - signal:
+        - signals:
             - WT_NoiseChannelProc object
+        - filt_func:
+            - specifies the filtering constructor to be applied on the signal.
+        - export_only (bool):
+            - defines whether to save a .jpg file from the window.
 
         Returns
         ---
         - win:
             - GraphicsLayoutWidget.GraphicsLayoutWidget object
+        - a "file".jpg (optional):
+            - in ./sign_overview folder generated if not existing. For the file
+        names a long string for analytical description is produced
         """
         for each in signals:
             filtrd = each.filter(fc_Hz=filt_func.params['fc_Hz'],
@@ -364,6 +376,8 @@ class Plotter_Class():
                                       f"Time domain filtered with {filtrd.description}")
             win = pg.GraphicsLayoutWidget(show=True,
                                           title="Basic plotting examples")
+
+            filt_ops = filtrd.operations.pop(2)
             win.resize(1920, 1080)
             win.setWindowTitle('pyqtgraph example: Plotting')
             # Enable antialiasing for prettier plots
@@ -372,7 +386,7 @@ class Plotter_Class():
             p1_raw = win.addPlot(row=0,
                                  col=0,
                                  colspan=1,
-                                 title=f"{each.description}(m/s)")
+                                 title=f"{each.description}")
             p1_raw.setLabels(bottom='time duration (s)',
                              left='Raw sensor Voltage',)
 
@@ -393,8 +407,7 @@ class Plotter_Class():
             p1_filt.plot(freq_dom_filtrd.time_sec,
                          filtrd.data,
                          pen=(0, 0, 255),
-                         name=(
-                             f"{filtrd.operations.pop(2)}"))
+                         name=filt_ops)
 
             p2_filt_fft = win.addPlot(row=1,
                                       col=0,
@@ -426,23 +439,34 @@ class Plotter_Class():
             p3_filt_spect.showGrid(x=True, y=True)
             p3_filt_spect.setLabels(bottom='Frequencies in Hz', left='dB',
                                     top='')
-            # p3_filt_spect.setYRange(-5, -18)
-            # p2.setLabel(axis='bottom', text='Frequencies in Hz')
-            # p2.setLabel(axis='left', text='Power/Freq')
+
             p3_filt_spect.plot(welch.x, welch.y,
                                pen=(50, 50, 250),
                                fillLevel=-18,
                                brush=(250, 50, 50, 100))
 
-            # save to a file somewhere
-            exporter = pg.exporters.ImageExporter(win.scene())
-            exporter.parameters()['width'] = 1920   # also effects the height
-            exporter.parameters()['antialias'] = True
-            # exporter.export('./sig_proc_plots/test.jpg')
-            # print("1")
-            pg.exec()
+            if export_only is True:
+                # time.sleep(2)
+                exporter = pg.exporters.ImageExporter(win.scene())
+                exporter.parameters()['width'] = 1920   # effects height
+                exporter.parameters()['antialias'] = True
 
-            # pass
+                # ensure normal operation on windows/linux
+                my_path = Path('./sign_overview/')
+                my_path.mkdir(parents=True, exist_ok=True)
+                raw_name = f"{filt_ops}-{filtrd.description}"
+                file_name = re.sub(r'=|-|\s', '_', raw_name)
+                file_name = re.sub(r',|m/s', '', file_name)
+                file_name = file_name.replace("()", "")
+
+                formated_name = f'sign_overview/{file_name}.jpg'
+
+                print(formated_name)
+                exporter.export(formated_name)
+
+            elif export_only is False:
+                print("No exporting specified")
+                pg.exec()
 
 
 def plot_comparative_response(wt_obj,   # cutoff frequency

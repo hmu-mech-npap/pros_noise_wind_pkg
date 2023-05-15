@@ -254,8 +254,27 @@ class FFT_new:
         self.group_name = signal.group_name
         self.operations = signal.operations
 
-    def fft_calc(self):
-        """Calculate the frequency domain of raw data using fft algorithm."""
+    def fft_calc(self) -> Graph_data_container:
+        """Calculate the frequency domain of raw data using fft algorithm.
+
+        Uses the initial constructor to calculate the frequency domain of a
+        given signal with constant sampling frequency.
+
+        Args:
+        - signal (WT_NoiseProcessor object): A given signal as the main class
+        object for using internal methods such as `.operations` and `.data`.
+
+        Returns:
+        - Graph_data_container(x, y, label): Used to produce uniformal plots
+        ammong the plotting functions.
+
+        Usage:
+        ```python
+        # For calculating only and returning a Graph_data_container
+        FFT_new(custom_object,
+                title='Decimation number 1 INV INV ON').fft_calc()
+        ```
+        """
         n = len(self.time_sec)
         fhat = np.fft.fft(self.data, n)                  # compute fft
         PSD = fhat * np.conj(fhat) / n                  # Power spectrum (pr/f)
@@ -265,8 +284,18 @@ class FFT_new:
                                     label="fft transform")
 
     def fft_calc_and_plot(self):
-        """Plot the frequency and time domain of the signal calculated
-        above."""
+        """Plot the frequency and time domain of the signal calculated above.
+
+        Draw a figure with the time and frequency domain representation using
+        `matplotlib` using (x, y) line plots.
+
+        Usage:
+        ```python
+        # For drawing a simple graph
+        FFT_new(custom_object,
+                title='Decimation number 1 INV INV ON').fft_calc_and_plot()
+        ```
+        """
         fig, axs = plt.subplots(2, 1)
 
         plt.sca(axs[0])
