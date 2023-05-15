@@ -2,8 +2,12 @@
 name: Testing
 
 on:
-  - pull_request
-  - push
+  push:
+    branches:
+      - master
+  pull-request:
+    branches:
+      - master
 
 jobs:
   build:
