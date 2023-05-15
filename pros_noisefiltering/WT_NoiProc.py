@@ -401,7 +401,7 @@ class Plotter_Class():
                                   title='Filtered signal')
             p1_filt.setLabels(bottom='time duration (s)', left='')
             p1_filt.showGrid(y=True)
-            p1_filt.addLegend()
+            p1_filt.addLegend(labelTextSize='11pt')
             p1_filt.setYRange(filtrd.data.min() - 0.1,
                               filtrd.data.max() + 0.1)
             p1_filt.plot(freq_dom_filtrd.time_sec,
