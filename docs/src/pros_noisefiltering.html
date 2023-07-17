@@ -28,11 +28,6 @@
 
             <h2>Contents</h2>
             <ul>
-  <li><a href="#description"><strong>Description</strong></a>
-  <ul>
-    <li><a href="#our-goal">Our goal</a></li>
-    <li><a href="#disclaimer">disclaimer</a></li>
-  </ul></li>
   <li><a href="#readme-file"><strong>README file</strong></a></li>
   <li><a href="#npp_wtblade-processing-of-wind-turbine-data">npp_wtblade: Processing of Wind turbine data</a>
   <ul>
@@ -67,23 +62,7 @@
                     <h1 class="modulename">
 <a href="./../src.html">src</a><wbr>.pros_noisefiltering    </h1>
 
-                        <div class="docstring"><h1 id="description"><strong>Description</strong></h1>
-
-<p>A python package to ease the signal analyzing recorded through LabView as
-<code>.tdms</code> dataframes.</p>
-
-<h2 id="our-goal">Our goal</h2>
-
-<p>We aim to make signal processing approachable to anyone with a basic
-understanding of the matter and a bit of python knowlegde.</p>
-
-<h2 id="disclaimer">disclaimer</h2>
-
-<p>The present software is not in complete state and should not be used to
-production code. Althowgh we are able to produce accurate plots using third
-party libraries such as <code>scipy</code>, <code>numpy</code> etc.</p>
-
-<h1 id="readme-file"><strong>README file</strong></h1>
+                        <div class="docstring"><h1 id="readme-file"><strong>README file</strong></h1>
 
 <h1 id="npp_wtblade-processing-of-wind-turbine-data">npp_wtblade: Processing of Wind turbine data</h1>
 
@@ -210,9 +189,9 @@ filters. For now this is all we need for processing our data (EMI noise after
 <h3 id="comparing-results-from-iir-and-fir-filters">comparing results from <code>IIR</code> and <code>FIR</code> filters</h3>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="kn">from</span> <span class="nn">pros_noisefiltering.WT_NoiProc</span> <span class="kn">import</span> <span class="p">(</span><span class="n">filt_butter_factory</span><span class="p">,</span>
-                                            <span class="n">fir_factory_constructor</span><span class="p">,</span>
-                                            <span class="n">plot_comparative_response</span><span class="p">)</span>
+<pre><span></span><code><span class="kn">from</span> <span class="nn">pros_noisefiltering.filters.iir</span> <span class="kn">import</span> <span class="n">filt_butter_factory</span>
+<span class="kn">from</span> <span class="nn">pros_noisefiltering.filters.fir</span> <span class="kn">import</span> <span class="n">fir_factory_constructor</span>
+<span class="kn">from</span> <span class="nn">pros_noisefiltering.plotting_funcs</span> <span class="kn">import</span> <span class="n">plot_comparative_response</span>
 
 <span class="c1"># needs ajustment in some cases </span>
 <span class="n">NPERSEG</span> <span class="o">=</span> <span class="mi">1024</span>
@@ -289,9 +268,9 @@ filters. For now this is all we need for processing our data (EMI noise after
 <h3 id="usage-2">Usage</h3>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="kn">from</span> <span class="nn">pros_noisefiltering.WT_NoiProc</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Plotter_Class</span><span class="p">,</span> 
-                                            <span class="n">fir_factory_constructor</span><span class="p">,</span>
-                                            <span class="n">filt_butter_factory</span><span class="p">)</span>
+<pre><span></span><code><span class="kn">from</span> <span class="nn">pros_noisefiltering.plotting_funcs</span> <span class="kn">import</span> <span class="n">Plotter_Class</span> 
+<span class="kn">from</span> <span class="nn">pros_noisefiltering.filters.iir</span> <span class="kn">import</span> <span class="n">filt_butter_factory</span>
+<span class="kn">from</span> <span class="nn">pros_noisefiltering.filters.fir</span> <span class="kn">import</span> <span class="n">fir_factory_constructor</span>
 
 <span class="n">signal_analyzer</span> <span class="o">=</span> <span class="n">Plotter_Class</span><span class="p">()</span>
 
@@ -317,25 +296,9 @@ filters. For now this is all we need for processing our data (EMI noise after
 
                         <label class="view-source-button" for="mod-pros_noisefiltering-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;# **Description**</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">A python package to ease the signal analyzing recorded through LabView as</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">`.tdms` dataframes.</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">Our goal</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">---</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">We aim to make signal processing approachable to anyone with a basic</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">understanding of the matter and a bit of python knowlegde.</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">disclaimer</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">---</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">The present software is not in complete state and should not be used to</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">production code. Althowgh we are able to produce accurate plots using third</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">party libraries such as `scipy`, `numpy` etc.</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd"># **README file**</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">.. include:: ../../README.md</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a><span class="sd">&quot;&quot;&quot;# **README file**</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">2</span></a><span class="sd">.. include:: ../../README.md</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span></pre></div>
 
 
