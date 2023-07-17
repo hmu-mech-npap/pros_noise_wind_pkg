@@ -35,7 +35,7 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install -e .
 
-  test_main_class:
+  test_pkg_functions:
     runs-on: ${{matrix.os}}
     needs: build
     strategy:
@@ -58,54 +58,5 @@ jobs:
 
       - name: Test with pytest
         run: |
-          pytest --color=yes --verbose -k test_WT
+          pytest --color=yes --verbose -k test_
 
-  test_my_functions:
-    runs-on: ${{matrix.os}}
-    needs: build
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        id: mystuff
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-          python -m pip install -e .
-
-      - name: Test with pytest
-        run: |
-          pytest --color=yes --verbose -k test_functions
-
-  test_plotter_class_ops:
-    runs-on: ${{matrix.os}}
-    needs: build
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        id: mystuff
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-          python -m pip install -e .
-
-      - name: Test with pytest
-        run: |
-          pytest --color=yes --verbose -k test_Plotter
