@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "toml"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools]
+packages = ["pros_noisefiltering"]
+package-dir = {"" = "src"}
+[project]
+name = "pros_noisefiltering"
+version = "0.1.5"
+authors = [
+  { name="N. Papadakis", email="npapnet@gmail.com" },
+  { name="N. Torosian", email="goodvibrations32@protonmail.com" }
+  ]
+
+description = "A package for processing data from Wind Turbine Blades at Wind Energ Laboratory"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+requires-python = ">=3.10"
+dependencies = [
+                 # "python >= 3.8",
+                 "pyqtgraph>=0.13.3",
+                 "setuptools",
+                 "wheel",
+                 "matplotlib>=3.7.1",
+                 "npTDMS>=1.6.2",
+                 "numpy>=1.24.3",
+                 "pandas>=2.0.1",
+                 "pathlib",
+                 "pluggy>=1.0.0",
+                 "PyQt-builder>=1.15.0",
+                 "PyQt5>=5.15.9",
+                 "pytest>=7.3.1",
+                 "scipy>=1.10.1",
+                 "tabulate>=0.9.0",
+                 ]
