@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
 import pathlib
-import pandas as pd
 
 from pros_noisefiltering.Graph_data_container import Graph_data_container
 
@@ -119,118 +118,6 @@ def plot_spect_comb2(graph_objlist,
         target_path = pathlib.Path(f'_temp_fig/{fname}.png')
         target_path.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(target_path, facecolor='white', transparent=False)
-
-
-# %%
-# New classes for storing signal and titles information for human readable code
-# and faster implementation regardless the actual operation of a function
-class Axis_titles:
-    """A class to store axes titles."""
-
-    def __init__(self, x_title: str, y_title: str) -> None:
-        """Initialize constructor."""
-        self.x_title = x_title
-        self.y_title = y_title
-
-
-class Time_domain_data_cont():
-    """A class for importing the x,y variables for a signal in time domain."""
-
-    def __init__(self,
-                 x: np.ndarray, y: np.ndarray,
-                 label: str) -> None:
-        """_summary_.
-
-        Args:
-            x (np.ndarray): time duration of the signal in seconds.
-            y (np.ndarray): amplitute in dB (decibel)
-            label (str): signal information for the figure legend
-        """
-        self.x = x
-        self.y = y
-        self.label = label
-
-
-# Define function to plot the raw and filtered signals combined
-
-def plot_signals(time_domain_sig,
-                 axis_titles: str,
-                 Title: str,
-                 **kwargs,
-                 ):
-    """## Plot signals in time domain.
-
-    This function is used to plot signals in time domain from the old dataset.
-    It was updated to use class objects as import for the x,y components of the
-    signal and the axis titles instead of a variable oriented import
-    (old plot_signals function) which was more static and ram consuming.
-
-
-    Args:
-        time_domain_sig (list): A list created from Time_domain_data_cont
-        axis_titles (str): The axis titles
-        Title (str): The titles to be plotted in each figure
-
-    """
-    fig, ax = plt.subplots(1, 1,
-                           figsize=kwargs.get('figsize',
-                                              None))
-    for obj in time_domain_sig:
-        ax.scatter(obj.x, obj.y,
-                   label=f'{obj.label}', s=1)
-
-    for ax_title in axis_titles:
-        ax.set_title(Title)
-        ax.set_ylabel(ax_title.y_title)
-        ax.set_xlabel(ax_title.x_title)
-        ax.grid(True, which='both')
-        ax.legend(bbox_to_anchor=(1.04, 0.5))
-
-
-def apply_filter(ds: np.ndarray, fs_Hz: float, fc_Hz=100, filt_order=2):
-    """Apply a butterworth IIR filter."""
-    sos = signal.butter(filt_order, fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
-    return filtered
-
-
-# %%
-def data_import(file_path: str, file_name_of_raw: str):
-    """File import script and data chunking for faster overall process time.
-
-    Args:
-    - file_path (str): the file path of the folder containing the HDF5 file
-    - file_name_of_raw (str): the name of the file to import
-    Returns:
-    - MATRIX_RAW (list): list of np.ndarrays transformed columns from dataset
-    - L (list): a list of the dataframes keys in str format
-    - List_of_chunked (list): Here we store the sampled raw
-    signal from the dataset with a constant rate
-    """
-    f_1 = pd.HDFStore(path=f'{file_path}{file_name_of_raw}', mode='r')
-    print('The data frame key is: ', f_1.keys())
-    data_raw = f_1['df']
-
-    # Chunking of data with a constant sample rate
-    rate_of_sampling = 10
-
-    chunked_data = data_raw[::rate_of_sampling]
-    List_of_chunked = []
-
-    # Make a list with present keys
-    L = list(data_raw.keys())
-
-    # Store the chunked data in a list for the signal processing operations
-    for element1 in L:
-        List_of_chunked.append(np.array(chunked_data.get(element1)))
-    print(data_raw.info())
-
-    # Manage data with lists
-    MATRIX_RAW = []
-    for element0 in L:
-        MATRIX_RAW.append(np.array(data_raw.get(element0)))
-
-    return MATRIX_RAW, L, List_of_chunked, file_path, file_name_of_raw
 
 
 class FFT_new:

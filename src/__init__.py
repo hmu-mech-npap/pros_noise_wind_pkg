@@ -12,8 +12,4 @@ disclaimer
 The present software is not in complete state and should not be used to
 production code. Althowgh we are able to produce accurate plots using third
 party libraries such as `scipy`, `numpy` etc.
-
-# **README file**
-
-.. include:: ../README.md
 """

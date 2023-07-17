@@ -2,9 +2,8 @@
 import pytest
 from unittest.mock import patch
 import numpy as np
-from pros_noisefiltering.WT_NoiProc import (WT_NoiseChannelProc,
-                                            fir_factory_constructor,
-                                            Plotter_Class)
+from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
+from pros_noisefiltering.filters.fir import fir_factory_constructor
 
 
 @pytest.fixture
@@ -40,7 +39,8 @@ def test_grapher_with_fir(mocker, create_initial_signal, analyzer):
     hz_fir = fir_factory_constructor(fir_order=34, fc_Hz=1000)
 
     plot = analyzer.plot_signal_all_doms([create_initial_signal],
-                                         filt_func=hz_fir)
+                                         filt_func=hz_fir,
+                                         export_only=True)
     assert plot is not None
 
 

@@ -3,7 +3,7 @@ import pytest
 
 import numpy as np
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
-from pros_noisefiltering.filters.fir import fir_factory_constructor
+from pros_noisefiltering.filters.iir import filt_butter_factory, apply_filter
 
 from pros_noisefiltering.Graph_data_container import Graph_data_container
 
@@ -25,37 +25,34 @@ def example_wtncp() -> WT_NoiseChannelProc:
 
 
 @pytest.fixture
-def fir_wrapper(example_wtncp):
-    """Make a copy for testing the FIR methods."""
-    obj_filt = WT_NoiseChannelProc.from_obj(example_wtncp, operation='copy')
-    return (obj_filt)
-
-
-@pytest.fixture
-def test_factory_fir(fir_wrapper):
+def test_factory_iir(example_wtncp):
     """Test the fir factory method ensure proper operation."""
-    fir_5_Hz = fir_factory_constructor(fir_order=30, fc_Hz=5)
-    filtered_signal = fir_wrapper.filter(fc_Hz=5, filter_func=fir_5_Hz)
+    iir_5_Hz = filt_butter_factory(filt_order=3, fc_Hz=5)
+    filtered_signal = example_wtncp.filter(fc_Hz=5, filter_func=iir_5_Hz)
 
     assert isinstance(filtered_signal.data, np.ndarray)
     assert filtered_signal.data.shape is not None
 
-    assert isinstance(fir_5_Hz.params, dict)
-    assert fir_5_Hz.params is not None
-    assert fir_5_Hz.params['fc_Hz'] == 5
-    assert fir_5_Hz.params['filter order'] == 30
+    assert isinstance(iir_5_Hz.params, dict)
+    assert iir_5_Hz.params is not None
+    assert iir_5_Hz.params['fc_Hz'] == 5
+    assert iir_5_Hz.params['filter order'] == 3
     return filtered_signal
 
 
-def test_filtering(fir_wrapper, test_factory_fir):
-    """Testing the effects from filtering with FIR factory method."""
+def test_filtering(example_wtncp, test_factory_iir):
+    """Testing the effects from filtering with IIR factory method."""
     assert "{:.1f}".format(
-        test_factory_fir.data.mean()) < (
+        test_factory_iir.data.mean()) < (
             "{:.1f}".format(
-                fir_wrapper.data.mean()))
+                example_wtncp.data.mean()))
 
-    assert np.std(test_factory_fir.data) < np.std(fir_wrapper.data)
+    assert np.std(test_factory_iir.data) < np.std(example_wtncp.data)
 
+
+def test_filters_apply_wrapper(example_wtncp):
+    signal = apply_filter(example_wtncp.data, 1000)
+    assert len(signal) is not None
 
 
 @pytest.fixture
