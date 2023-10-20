@@ -19,13 +19,13 @@ As mentioned [here](https://blog.ganssle.io/articles/2021/10/setup-py-deprecated
 ```console
 cd path/to/pkg
 ```
-- `develop` mode
+- `build` command
 ``` console
-pip install -e .
+python -m build
 ```
-- `normal` installation
+- `installation` command for all users (preferred will install in /usr/lib directory)
 ``` console
-pip install
+sudo python -m installer dist/*.whl
 ```
 
 ## usage
