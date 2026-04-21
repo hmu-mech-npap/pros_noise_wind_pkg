@@ -6,7 +6,7 @@ npTDMS>=1.6.2
 numpy>=1.24.3
 pandas>=2.0.1
 pathlib
-pluggy>=1.0.0
+pluggy>=1.6.0
 PyQt-builder>=1.15.0
 PyQt5>=5.15.9
 pytest>=7.3.1
