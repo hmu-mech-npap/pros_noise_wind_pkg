@@ -1,7 +1,7 @@
 pyqtgraph>=0.13.3
 setuptools
 wheel
-matplotlib>=3.7.1
+matplotlib>=3.10.9
 npTDMS>=1.6.2
 numpy>=1.24.3
 pandas>=2.0.1
